@@ -1,16 +1,20 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { SocketContext } from '../context/SocketContext'
 
-export const SerieAdd = ({crearSerie}) => {
+export const SerieAdd = () => {
+
+    const { socket } = useContext(SocketContext)
     const [valor, setValor] = useState('')
-
+    
     const onSubmit = (e) => {
         e.preventDefault()
 
-        if(valor.trim().length > 0) {
-            crearSerie(valor)
+        if (valor.trim().length > 0) {
+            socket.emit('crear-serie', valor)
             setValor('')
         }
     }
+    
     return (
         <>
             <h3>Agregar Serie</h3>

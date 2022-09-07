@@ -1,11 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { SocketContext } from '../context/SocketContext'
 
-export const SerieList = ({ data, votar, borrar, cambiarNombre }) => {
-    const [series, setSeries] = useState(data)
+export const SerieList = () => {
+    const [series, setSeries] = useState([])
+    const { socket } = useContext(SocketContext)
 
     useEffect(() => {
-        setSeries(data)
-    }, [data])
+        socket.on('current-series', (data) => {
+            setSeries(data)
+        })
+
+        return () => socket.off('current-series')
+    }, [socket])
 
     const handleName = (e, id) => {
         const newName = e.target.value
@@ -21,8 +27,16 @@ export const SerieList = ({ data, votar, borrar, cambiarNombre }) => {
         )
     }
 
+    const votar = (id) => {
+        socket.emit('votar-serie', id)
+    }
+
+    const borrar = (id) => {
+        socket.emit('borrar-serie', id)
+    }
+
     const onPerdioFoco = (id, name) => {
-        cambiarNombre(id, name)
+        socket.emit('cambiar-nombre-serie', { id, name })
     }
 
     const crearRows = () => {
